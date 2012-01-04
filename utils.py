@@ -47,7 +47,7 @@ class Component(object):
     
 
 def run_all(working_dir, components):
-    """Runs each part of each component in a subprocess""
+    """Runs each part of each component in a subprocess"""
     all_procs = []
     for component in components:
         root = os.path.join(working_dir, component.name)
