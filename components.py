@@ -17,7 +17,7 @@ class Apache(Component):
 class Network(Component):
     @command_output
     def open_connections_lsof(self):
-        return ['lsof', 'i']
+        return ['lsof', '-i']
 
     @command_output
     def netstat(self):

@@ -2,6 +2,7 @@
 from functools import wraps
 import subprocess
 import tempfile, os
+from multiprocessing import Process
 
 def diagnostic_function(func):
     func.diagnostic_function = True
@@ -43,13 +44,33 @@ class Component(object):
     def name(self):
         return self.__class__.__name__.lower()
 
-    def run(self):
-        root = os.path.join(self.working_dir, self.name)
+    
+
+def run_all(working_dir, components):
+    """Runs each part of each component in a subprocess""
+    all_procs = []
+    for component in components:
+        root = os.path.join(working_dir, component.name)
         os.mkdir(root)
-        functions = [getattr(self, x) for x in dir(self) if x[:2] != '__' and getattr(getattr(self, x), 'diagnostic_function', False)]
+        functions = [getattr(component, x) for x in dir(component) if x[:2] != '__' and getattr(getattr(component, x), 'diagnostic_function', False)]
         for function in functions:
-            with open(os.path.join(root, function.name), 'w') as fp:
-                output = function()
-                fp.write(output)
 
+            def run():
+                print 'start', component.name, function.name
+                with open(os.path.join(root, function.name), 'w') as fp:
+                    output = function()
+                    fp.write(output)
+                print 'end', component.name, function.name
 
+            proc = Process(target=run)
+            all_procs.append(proc)
+            proc.start()
+
+    while True:
+        alive_procs = [p for p in all_procs if p.is_alive()]
+        if len(alive_procs) == 0:
+            break
+        else:
+            # wait for one of them to finish
+            alive_procs[0].join()
+    

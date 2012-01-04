@@ -20,8 +20,7 @@ def main():
     components = [kls(tempdir) for kls in all_components()]
 
     # run all 
-    for c in components:
-        c.run()
+    run_all(tempdir, components)
 
     
 if __name__ == '__main__':
