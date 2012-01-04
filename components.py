@@ -9,6 +9,10 @@ class Basics(Component):
     def open_files(self):
         return 'lsof'
 
+    @bash_command
+    def memory_usage(self):
+        return "free"
+
 class Apache(Component):
     @bash_command
     def running(self):
@@ -22,6 +26,15 @@ class Network(Component):
     @bash_command
     def netstat(self):
         return 'netstat'
+
+    @bash_command
+    def ifconfig(self):
+        return 'ifconfig -a'
+
+    @bash_command
+    def ip_link_show(self):
+        return 'ip link show'
+
 
 class MySQL(Component):
     @bash_command
