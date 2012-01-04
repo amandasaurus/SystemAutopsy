@@ -6,19 +6,19 @@ from multiprocessing import Process
 
 def diagnostic_function(func):
     func.diagnostic_function = True
-    func.name = func.__name__.lower()
     return func
 
 def bash_command(func):
     @diagnostic_function
     @wraps(func)
-    def inner(*args, **kwargs):
-        command = func(*args, **kwargs)
-        try:
-            output = subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as err:
-            output = "Error: "+repr(err)
-        return output
+    def inner(self, root, *args, **kwargs):
+        command = func(self, *args, **kwargs)
+        name = func.__name__.lower()
+        with open(os.path.join(root, name), 'w') as fp:
+            try:
+                fp.write(subprocess.check_output(command, shell=True))
+            except subprocess.CalledProcessError as err:
+                output = "Error: "+repr(err)
 
     return inner
 
@@ -54,15 +54,7 @@ def run_all(working_dir, components):
         os.mkdir(root)
         functions = [getattr(component, x) for x in dir(component) if x[:2] != '__' and getattr(getattr(component, x), 'diagnostic_function', False)]
         for function in functions:
-
-            def run():
-                print 'start', component.name, function.name
-                with open(os.path.join(root, function.name), 'w') as fp:
-                    output = function()
-                    fp.write(output)
-                print 'end', component.name, function.name
-
-            proc = Process(target=run)
+            proc = Process(target=function, args=(root,))
             all_procs.append(proc)
             proc.start()
 
