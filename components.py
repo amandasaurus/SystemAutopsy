@@ -13,3 +13,17 @@ class Apache(Component):
     @bash_command
     def running(self):
         return "ps -fp $(pgrep -u www-data)"
+
+class Network(Component):
+    @command_output
+    def open_connections_lsof(self):
+        return ['lsof', 'i']
+
+    @command_output
+    def netstat(self):
+        return ['netstat']
+
+class MySQL(Component):
+    @bash_command
+    def running(self):
+        return "ps -fp $(pgrep -u mysql)"
