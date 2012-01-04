@@ -66,11 +66,7 @@ def run_all(working_dir, components):
             all_procs.append(proc)
             proc.start()
 
-    while True:
-        alive_procs = [p for p in all_procs if p.is_alive()]
-        if len(alive_procs) == 0:
-            break
-        else:
-            # wait for one of them to finish
-            alive_procs[0].join()
-    
+    # wait for all subprocesses to finish
+    for proc in all_procs:
+        if proc.is_alive():
+            proc.join()
