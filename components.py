@@ -1,13 +1,13 @@
 from utils import * 
 
-class Disk(Component):
-    @command_output
-    def usage(self):
-        return ['df']
+class Basics(Component):
+    @bash_command
+    def disk_usage(self):
+        return "df"
 
-    @command_output
+    @bash_command
     def open_files(self):
-        return ['lsof']
+        return 'lsof'
 
 class Apache(Component):
     @bash_command
@@ -15,13 +15,13 @@ class Apache(Component):
         return "ps -fp $(pgrep -u www-data)"
 
 class Network(Component):
-    @command_output
+    @bash_command
     def open_connections_lsof(self):
-        return ['lsof', '-i']
+        return "lsof -i"
 
-    @command_output
+    @bash_command
     def netstat(self):
-        return ['netstat']
+        return 'netstat'
 
 class MySQL(Component):
     @bash_command
