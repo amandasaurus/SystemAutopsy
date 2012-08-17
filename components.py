@@ -15,8 +15,8 @@ class Basics(Component):
 
 class Apache(Component):
     @bash_command
-    def running(self):
-        return "ps -fp $(pgrep -u www-data)"
+    def running_procs(self):
+            return "ps -p $(pgrep -u www-data) 2>/dev/null"
 
 class Network(Component):
     @bash_command
