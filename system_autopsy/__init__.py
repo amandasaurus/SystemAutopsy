@@ -1,4 +1,5 @@
 import imp, os.path, inspect, os
+import datetime, shutil
 
 from system_autopsy.utils import *
 
@@ -31,6 +32,12 @@ def main():
 
     # run all 
     run_all(tempdir, components)
+
+    # zip it up
+    archive_name = shutil.make_archive(os.path.join(os.path.expanduser("~"), "autopsy.%s" % start_datetime), format="gztar", root_dir=tempdir)
+    print "Archive of results in %s" % archive_name
+    shutil.rmtree(tempdir)
+
 
     
 if __name__ == '__main__':
