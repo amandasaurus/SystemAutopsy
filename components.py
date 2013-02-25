@@ -40,3 +40,8 @@ class MySQL(Component):
     @bash_command
     def running(self):
         return "ps -fp $(pgrep -u mysql)"
+
+    @iterate_on(pids_matching('-u mysql'))
+    @takes_own_filename
+    def strace_mysqld(self, pid, filename):
+        return "timeout 10s strace -o {filename} -f -p {pid}".format(filename=filename, pid=pid)
