@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 from utils import *
-from components import *
+from default_components import *
 
 def all_components():
     results = []
