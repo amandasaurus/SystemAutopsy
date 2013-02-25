@@ -10,17 +10,36 @@ def diagnostic_function(func):
     func.generate_arguments = lambda func=func: []
     return func
 
+# FIXME bash_command & iterate_on are too different
+
 def bash_command(func):
     @diagnostic_function
     @wraps(func)
     def inner(self, root, *args, **kwargs):
-        command = func(self, *args, **kwargs)
+        takes_own_filename = getattr(func, 'takes_own_filename', False)
         name = func.__name__.lower()
-        with open(os.path.join(root, name), 'w') as fp:
+
+        full_filename = os.path.join(root, name)
+
+        if takes_own_filename:
+            new_kwargs = copy.copy(kwargs)
+            assert 'filename' not in new_kwargs
+            new_kwargs['filename'] = full_filename
+            command = func(self, *args, **new_kwargs)
+
             try:
-                fp.write(subprocess.check_output(command, shell=True))
+                subprocess.check_output(command, shell=True)
             except subprocess.CalledProcessError as err:
                 output = "Error: "+repr(err)
+
+        else:
+            command = func(self, *args, **kwargs)
+
+            with open(full_filename) as fp:
+                try:
+                    fp.write(subprocess.check_output(command, shell=True))
+                except subprocess.CalledProcessError as err:
+                    output = "Error: "+repr(err)
 
     return inner
 
