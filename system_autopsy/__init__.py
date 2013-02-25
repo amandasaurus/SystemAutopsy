@@ -1,12 +1,24 @@
-from utils import *
-from default_components import *
+import imp, os.path, inspect, os
+
+from system_autopsy.utils import *
+
+# Figure out what components to import/use
+# Try current directory
+possible_local_module = os.path.join(os.getcwd(), 'system_autopsy_components.py')
+possible_home_module = os.path.join(os.path.expanduser("~"), 'system_autopsy_components.py')
+if os.path.isfile(possible_local_module):
+    components = imp.load_source('components', possible_local_module)
+elif os.path.isfile(possible_home_module):
+    components = imp.load_source('components', possible_home_module)
+else:
+    import system_autopsy.default_components as components
 
 def all_components():
     results = []
-    for i in globals().values():
+    for name, value in inspect.getmembers(components):
         try:
-            if issubclass(i, Component) and i != Component:
-                results.append(i)
+            if issubclass(value, Component):
+                results.append(value)
         except TypeError:
             pass
     return results
