@@ -35,7 +35,7 @@ def bash_command(func):
         else:
             command = func(self, *args, **kwargs)
 
-            with open(full_filename) as fp:
+            with open(full_filename, 'w') as fp:
                 try:
                     fp.write(subprocess.check_output(command, shell=True))
                 except subprocess.CalledProcessError as err:
@@ -72,7 +72,7 @@ def iterate_on(first_arg_func):
             else:
                 command = func(self, *args, **kwargs)
 
-                with open(full_filename) as fp:
+                with open(full_filename, 'w') as fp:
                     try:
                         fp.write(subprocess.check_output(command, shell=True))
                     except subprocess.CalledProcessError as err:
