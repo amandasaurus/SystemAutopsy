@@ -42,17 +42,11 @@ def iterate_on(first_arg_func):
                 except subprocess.CalledProcessError as err:
                     output = "Error: "+repr(err)
 
-        def _generate_arguments():
-            return first_arg_func()
-
-        inner.generate_arguments = _generate_arguments
+        inner.generate_arguments = first_arg_func
         inner.diagnostic_function = True
 
         return inner
 
-    decorator.first_arg_func = first_arg_func
-
-    #import pdb ; pdb.set_trace()
 
     return decorator
 
