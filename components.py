@@ -18,6 +18,12 @@ class Apache(Component):
     def running_procs(self):
             return "ps -p $(pgrep -u www-data) 2>/dev/null"
 
+    @iterate_on(pids_matching('-u www-data'))
+    @takes_own_filename
+    def strace_wsgi(self, pid, filename):
+        return "timeout 10s strace -o {filename} -f -p {pid}".format(filename=filename, pid=pid)
+
+
 class Network(Component):
     @bash_command
     def open_connections_lsof(self):
