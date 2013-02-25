@@ -30,7 +30,13 @@ def iterate_on(first_arg_func):
         def inner(self, root, *args, **kwargs):
             command = func(self, *args, **kwargs)
             name = func.__name__.lower()
-            with open(os.path.join(root, name), 'w') as fp:
+            assert len(kwargs) == 0, "Can't handle this yet"
+            dirs = [str(a) for a in args]
+            full_dir_path = os.path.join(root, name, *dirs)
+            os.makedirs(full_dir_path)
+
+            # alas duplicate for name
+            with open(os.path.join(full_dir_path, name), 'w') as fp:
                 try:
                     fp.write(subprocess.check_output(command, shell=True))
                 except subprocess.CalledProcessError as err:
