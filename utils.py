@@ -3,6 +3,7 @@ from functools import wraps
 import subprocess
 import tempfile, os
 from multiprocessing import Process
+import copy
 
 def diagnostic_function(func):
     func.diagnostic_function = True
@@ -28,19 +29,34 @@ def iterate_on(first_arg_func):
     
         @wraps(func)
         def inner(self, root, *args, **kwargs):
-            command = func(self, *args, **kwargs)
+            takes_own_filename = getattr(func, 'takes_own_filename', False)
             name = func.__name__.lower()
             assert len(kwargs) == 0, "Can't handle this yet"
             dirs = [str(a) for a in args]
             full_dir_path = os.path.join(root, name, *dirs)
-            os.makedirs(full_dir_path)
+            os.makedirs(os.path.join(root, name, *dirs))
 
-            # alas duplicate for name
-            with open(os.path.join(full_dir_path, name), 'w') as fp:
+            full_filename = os.path.join(full_dir_path, name)
+            
+            if takes_own_filename:
+                new_kwargs = copy.copy(kwargs)
+                assert 'filename' not in new_kwargs
+                new_kwargs['filename'] = full_filename
+                command = func(self, *args, **new_kwargs)
+
                 try:
-                    fp.write(subprocess.check_output(command, shell=True))
+                    subprocess.check_output(command, shell=True)
                 except subprocess.CalledProcessError as err:
                     output = "Error: "+repr(err)
+
+            else:
+                command = func(self, *args, **kwargs)
+
+                with open(full_filename) as fp:
+                    try:
+                        fp.write(subprocess.check_output(command, shell=True))
+                    except subprocess.CalledProcessError as err:
+                        output = "Error: "+repr(err)
 
         inner.generate_arguments = first_arg_func
         inner.diagnostic_function = True
@@ -111,4 +127,8 @@ def pids_matching(format):
         return [ ( [pid], {} ) for pid in pids ]
     inner.__name__ = "pids_matching %s" % (format)
     return inner
+
+def takes_own_filename(func):
+    func.takes_own_filename = True
+    return func
 
