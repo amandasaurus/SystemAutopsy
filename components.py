@@ -16,7 +16,7 @@ class Basics(Component):
 class Apache(Component):
     @bash_command
     def running_procs(self):
-            return "ps -p $(pgrep -u www-data) 2>/dev/null"
+        return "ps -p $(pgrep -u www-data) 2>/dev/null"
 
     @iterate_on(pids_matching('-u www-data'))
     @takes_own_filename
