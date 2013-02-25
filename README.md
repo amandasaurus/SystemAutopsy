@@ -92,6 +92,35 @@ this command:
 *(Note: since strace puts output on stderr, not stdout, you should use
 @takes_own_filename here)*
 
+Extending SystemAutopsy's default components
+============================================
+
+If you want to add some custom components that are private to you, you can just
+import the ``default_components``
+
+Put this file in ``~/system_autopsy_components.py``
+
+    from system_autopsy.default_components import *
+
+    class MySQLStatus(Component):
+        @bash_command
+        def process_list(self):
+            return "mysql -u root -h localhost -pMYSQLROOTPASSSWORD -e \"SHOW PROCESSLIST;\""
+
+
+This allows you thave components that have sensitive data.
+
+STDERR, exit codes & time outs
+==============================
+
+Any command that prints to stderr will be echod to you terminal and not caught.
+``strace`` can be annoying and noisey like this.
+
+The exit status of any command is irrelevant and ignored.
+
+A command is allowed to run as long as wants, SystemAutopsy does not try to
+stop them. You can use ``timeout(1)`` from ``coreutils`` to control how long
+something runs for. (See the ``strace_mysqld`` example above).
 
 Licence
 -------
