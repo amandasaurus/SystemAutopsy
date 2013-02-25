@@ -27,6 +27,7 @@ def bash_command(func):
 def iterate_on(first_arg_func):
     def decorator(func):
     
+        @diagnostic_function
         @wraps(func)
         def inner(self, root, *args, **kwargs):
             takes_own_filename = getattr(func, 'takes_own_filename', False)
@@ -59,7 +60,6 @@ def iterate_on(first_arg_func):
                         output = "Error: "+repr(err)
 
         inner.generate_arguments = first_arg_func
-        inner.diagnostic_function = True
 
         return inner
 
