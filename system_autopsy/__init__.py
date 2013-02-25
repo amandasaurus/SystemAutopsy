@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 from utils import *
 from default_components import *
 
