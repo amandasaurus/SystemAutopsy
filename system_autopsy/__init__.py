@@ -18,7 +18,7 @@ def all_components():
     results = []
     for name, value in inspect.getmembers(components):
         try:
-            if issubclass(value, Component):
+            if issubclass(value, Component) and value != Component:
                 results.append(value)
         except TypeError:
             pass
