@@ -26,7 +26,9 @@ def all_components():
 
 
 def main():
-    tempdir = tempfile.mkdtemp(prefix="autopsy.")
+    start_datetime = datetime.datetime.utcnow().isoformat()
+
+    tempdir = tempfile.mkdtemp(prefix=("autopsy.%s." % start_datetime))
     print "Working in ", tempdir
     components = [kls(tempdir) for kls in all_components()]
 
