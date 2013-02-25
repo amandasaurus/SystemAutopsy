@@ -35,27 +35,12 @@ def iterate_on(first_arg_func):
             full_dir_path = os.path.join(root, name, *dirs)
             os.makedirs(full_dir_path)
 
-            try:
-                proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                proc.wait()
-                stdout = proc.stdout.read()
-                stderr = proc.stderr.read()
-                if len(stdout) == 0 and len(stderr) == 0:
-                    print "No output from ", command
-                elif len(stdout) >0 0 and len(stderr) == 0:
-                    # stdout only
-                    with open(os.path.join(full_dir_path, name), 'w') as fp:
-                        fp.write(stdout)
-                elif len(stdout) == 0 and len(stderr) > 0:
-                    # stderr only (strace is like this)
-                    with open(os.path.join(full_dir_path, name), 'w') as fp:
-                        fp.write(stderr)
-                else:
-                    # both are non-empty
-                    with open(os.path.join(full_dir_path, "%s.stdout" % name), 'w') as fp:
-                        fp.write(stdout)
-                    with open(os.path.join(full_dir_path, "%s.stderr" % name), 'w') as fp:
-                        fp.write(stderr)
+            # alas duplicate for name
+            with open(os.path.join(full_dir_path, name), 'w') as fp:
+                try:
+                    fp.write(subprocess.check_output(command, shell=True))
+                except subprocess.CalledProcessError as err:
+                    output = "Error: "+repr(err)
 
         inner.generate_arguments = first_arg_func
         inner.diagnostic_function = True
