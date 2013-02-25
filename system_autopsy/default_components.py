@@ -30,8 +30,8 @@ class Network(Component):
         return "lsof -i"
 
     @bash_command
-    def netstat(self):
-        return 'netstat'
+    def netstat_connections(self):
+        return 'netstat -nt'
 
     @bash_command
     def ifconfig(self):
