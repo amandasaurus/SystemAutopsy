@@ -139,3 +139,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 It was written by Rory McCann <rory@technomancy.org>.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rory/systemautopsy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
